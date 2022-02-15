@@ -225,6 +225,14 @@
 			"pattern": "^(did:indy:.+)$",
 			"url": "http://indy-did-driver:8080/1.0/identifiers/$1",
 			"testIdentifiers": [ "did:indy:idunion:BDrEcHc8Tb4Lb2VyQZWEDE", "did:indy:sovrin:staging:6cgbu8ZPoWTnR5Rv5JcSMB", "did:indy:eesdi:H1iHEynabfar9mp4uprW6W" ]
+		},
+		{
+			"pattern": "^(did:hedera:.+)$",
+			"url": "http://uni-resolver-driver-did-hedera:8081/",
+			"testIdentifiers": [
+				"did:hedera:testnet:z6MkvD6JAfMyP6pgQoYxfE9rubgwLD9Hmz8rQh1FAxvbW8XB_0.0.29656526", 
+				"did:hedera:testnet:z6MkoDQtZUaT4vD314TcG5u91G46PoANQ8juFvuR2MnrfCqA_0.0.29677421"
+			]
 		}
 	]
 }
