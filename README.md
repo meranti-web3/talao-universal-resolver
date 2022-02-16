@@ -131,7 +131,7 @@ Are you developing a DID method and Universal Resolver driver? Click [Driver Dev
 | [did-mydata](https://github.com/decentralised-dataexchange/mydata-did-driver) | 1.0 | [1.1 WD](https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/did-spec.md) | [igrantio/uni-resolver-driver-did-mydata](https://hub.docker.com/repository/docker/igrantio/uni-resolver-driver-did-mydata) | [iGrant.io](https://igrant.io/) |
 | [did-dns](https://github.com/danubetech/uni-resolver-driver-did-dns) | 0.1-SNAPSHOT | [0.1](https://danubetech.github.io/did-method-dns/) | [universalresolver/driver-did-dns](https://hub.docker.com/r/universalresolver/driver-did-dns/) | Domain name |
 | [did-indy](https://github.com/IDunion/indy-did-resolver) | 0.0.1 | [0.1](https://hyperledger.github.io/indy-did-method/) | [ghcr.io/idunion/indy-did-resolver/indy-did-driver](https://github.com/IDunion/indy-did-resolver/pkgs/container/indy-did-resolver%2Findy-did-driver) | Hyperledger Indy |
-| [did-hedera](https://github.com/Meeco/hedera-did-universal-resolver-driver) | 1.0.0 | [1.0.0](https://github.com/Meeco/did-method/blob/master/did-method-specification.md) | [meecosystem/uni-resolver-driver-did-hedera](https://hub.docker.com/r/meecosystem/uni-resolver-driver-did-hedera) | Hedera Consensus Service
+| [did-hedera](https://github.com/Meeco/hedera-did-universal-resolver-driver) | 1.0.0 | [1.0.0](https://github.com/Meeco/did-method/blob/master/did-method-specification.md) | [meecosystem/uni-resolver-driver-did-hedera](https://hub.docker.com/r/meeco/uni-resolver-driver-did-hedera) | Hedera Consensus Service
 
 ## More Information
 

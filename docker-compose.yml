@@ -197,6 +197,6 @@ services:
     ports:
       - "8128:8080"
   uni-resolver-driver-did-hedera:
-    image: meecosystem/uni-resolver-driver-did-hedera:latest
+    image: meeco/uni-resolver-driver-did-hedera:latest
     ports:
       - "8129:8081"
