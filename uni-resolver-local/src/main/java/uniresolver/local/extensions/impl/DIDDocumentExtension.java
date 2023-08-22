@@ -15,12 +15,12 @@ import uniresolver.result.ResolveResult;
 
 import java.util.Map;
 
-public class DIDDocumentExtension implements DereferencerExtension {
+public class DIDDocumentExtension implements DereferencerExtension.DereferencePrimaryDereferencerExtension {
 
     private static final Logger log = LoggerFactory.getLogger(DIDDocumentExtension.class);
 
     @Override
-    public ExtensionStatus dereferencePrimary(DIDURL didUrlWithoutFragment, Map<String, Object> dereferenceOptions, ResolveResult resolveResult, DereferenceResult dereferenceResult, LocalUniDereferencer localUniDereferencer) throws ResolutionException, DereferencingException {
+    public ExtensionStatus dereferencePrimary(DIDURL didUrlWithoutFragment, Map<String, Object> dereferenceOptions, ResolveResult resolveResult, DereferenceResult dereferenceResult, Map<String, Object> executionState, LocalUniDereferencer localUniDereferencer) throws ResolutionException, DereferencingException {
 
         // check inputs
 

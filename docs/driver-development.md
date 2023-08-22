@@ -18,6 +18,8 @@ Your driver will receive an `Accept` header with the value `application/ld+json`
 
 A Swagger API definition is available [here](https://github.com/decentralized-identity/universal-resolver/blob/main/swagger/api-driver.yml).
 
+For more information about this interface, see the [DID Resolution](https://w3c-ccg.github.io/did-resolution/) specification.
+
 ## Driver Rules
 
 - The DID method implemented by the driver must have a specification that is registered in the
@@ -35,19 +37,19 @@ A Swagger API definition is available [here](https://github.com/decentralized-id
 
 ### How to contribute a driver
 
-Create a PR that edits the following files in the Universal Resolver root directory:
+Create a PR that edits the following files in the Universal Resolver root directory and uni-resolver-web's [`application.yml`](https://github.com/decentralized-identity/universal-resolver/blob/main/uni-resolver-web/src/main/resources/application.yml):
 
-- `.env`
-  * list environment variables (if any) with default values
-- `config.json` (add your driver)
-  * pattern - regular expression for matching your DID method
-  * url - endpoint of your Docker image
-  * testIdentifier - list of example DIDs that your driver can resolve
-- `docker-compose.yml` (add your driver)
+- [`docker-compose.yml`](https://github.com/decentralized-identity/universal-resolver/blob/main/docker-compose.yml) (add your driver, if it has a Docker image)
   * image - your Docker image name
   * ports - incremented port number exposed by your Docker image
   * environment - optional environment variables supported by your Docker image
-- `README.md` (insert a line to the driver table)
+- [`application.yml`](https://github.com/decentralized-identity/universal-resolver/blob/main/uni-resolver-web/src/main/resources/application.yml) (add  your driver)
+  * pattern - regular expression for matching your DID method
+  * url - endpoint of your Docker image or external resolver endpoint
+  * testIdentifiers - list of example DIDs that your driver can resolve
+- [`.env`](https://github.com/decentralized-identity/universal-resolver/blob/main/.env)
+  * list environment variables (if any) with default values
+- [`README.md`](https://github.com/decentralized-identity/universal-resolver/blob/main/README.md) (insert a line to the driver table)
   * driver name (e.g. `did-example`), with link to driver source code
   * driver version (e.g. `0.1`), should match Docker image version
   * DID method spec version (e.g. `0.1`), with link to DID method spec (or mark "missing")
@@ -92,7 +94,13 @@ To do so, follow these steps:
   cd universal-resolver/
   ```
 
-- Make the required changes mentioned above ("How to contribute a driver") to the `.env`, `config.json` and `docker-compose.yml` files.
+- Make the required changes mentioned above ("How to contribute a driver") to the `.env`, [`application.yml`](https://github.com/decentralized-identity/universal-resolver/blob/main/uni-resolver-web/src/main/resources/application.yml) and `docker-compose.yml` files.
+
+- Pull remote docker images
+
+  ```bash
+    docker-compose -f docker-compose.yml pull
+  ```
 
 - Build uni-resolver-web locally:
 
@@ -103,9 +111,10 @@ To do so, follow these steps:
 - Run the uni-resolver-web locally:
 
   ```bash
-  docker-compose -f docker-compose.yml pull
   docker-compose -f docker-compose.yml up
   ```
+
+After each local change, you must rebuild uni-resolver-web locally. If you pull docker images, it will overwrite the local uni-resolver-web, so you must rebuild again after pulling.
 
 You can now resolve DID Documents via `curl` commands as documented in the [Quick Start](https://github.com/decentralized-identity/universal-resolver#quick-start) notes.
 

@@ -54,17 +54,25 @@ public class LocalUniResolver implements UniResolver {
 
 	@Override
 	public ResolveDataModelResult resolve(String didString, Map<String, Object> resolutionOptions) throws ResolutionException {
+		return this.resolve(didString, resolutionOptions, null);
+	}
+
+	public ResolveDataModelResult resolve(String didString, Map<String, Object> resolutionOptions, Map<String, Object> initialExecutionState) throws ResolutionException {
 		if (log.isDebugEnabled()) log.debug("resolve(" + didString + ")  with options: " + resolutionOptions);
-		return (ResolveDataModelResult) this.resolveOrResolveRepresentation(didString, resolutionOptions, false);
+		return (ResolveDataModelResult) this.resolveOrResolveRepresentation(didString, resolutionOptions, false, initialExecutionState);
 	}
 
 	@Override
 	public ResolveRepresentationResult resolveRepresentation(String didString, Map<String, Object> resolutionOptions) throws ResolutionException {
-		if (log.isDebugEnabled()) log.debug("resolveRepresentation(" + didString + ")  with options: " + resolutionOptions);
-		return (ResolveRepresentationResult) this.resolveOrResolveRepresentation(didString, resolutionOptions, true);
+		return this.resolveRepresentation(didString, resolutionOptions, null);
 	}
 
-	private ResolveResult resolveOrResolveRepresentation(String didString, Map<String, Object> resolutionOptions, boolean resolveRepresentation) throws ResolutionException {
+	public ResolveRepresentationResult resolveRepresentation(String didString, Map<String, Object> resolutionOptions, Map<String, Object> initialExecutionState) throws ResolutionException {
+		if (log.isDebugEnabled()) log.debug("resolveRepresentation(" + didString + ")  with options: " + resolutionOptions);
+		return (ResolveRepresentationResult) this.resolveOrResolveRepresentation(didString, resolutionOptions, true, initialExecutionState);
+	}
+
+	private ResolveResult resolveOrResolveRepresentation(String didString, Map<String, Object> resolutionOptions, boolean resolveRepresentation, Map<String, Object> initialExecutionState) throws ResolutionException {
 
 		if (didString == null) throw new NullPointerException();
 		if (this.getDrivers() == null) throw new ResolutionException("No drivers configured.");
@@ -73,10 +81,15 @@ public class LocalUniResolver implements UniResolver {
 
 		long start = System.currentTimeMillis();
 
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
+
 		// prepare resolve result
 
-		DID did = null;
-		ResolveResult resolveResult = resolveRepresentation ? ResolveRepresentationResult.build() : ResolveDataModelResult.build();
+		final DID did;
+		final ResolveResult resolveResult = resolveRepresentation ? ResolveRepresentationResult.build() : ResolveDataModelResult.build();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// parse
@@ -98,12 +111,7 @@ public class LocalUniResolver implements UniResolver {
 
 		// [before resolve]
 
-		if (! extensionStatus.skipBeforeResolve()) {
-			for (ResolverExtension resolverExtension : this.getExtensions()) {
-				extensionStatus.or(resolverExtension.beforeResolve(did, resolutionOptions, resolveResult, resolveRepresentation, this));
-				if (extensionStatus.skipBeforeResolve()) break;
-			}
-		}
+		this.executeExtensions(ResolverExtension.BeforeResolveResolverExtension.class, extensionStatus, e -> e.beforeResolve(did, resolutionOptions, resolveResult, resolveRepresentation, executionState, this), resolutionOptions, resolveResult, executionState);
 
 		// [resolve]
 
@@ -112,7 +120,6 @@ public class LocalUniResolver implements UniResolver {
 			if (log.isInfoEnabled()) log.info("Resolving DID: " + did);
 
 			ResolveResult driverResolveResult = this.resolveOrResolveRepresentationWithDrivers(did, resolutionOptions, resolveRepresentation);
-
 			if (driverResolveResult != null) {
 				resolveResult.getDidResolutionMetadata().putAll(driverResolveResult.getDidResolutionMetadata());
 				if (resolveResult instanceof ResolveDataModelResult) ((ResolveDataModelResult) resolveResult).setDidDocument(((ResolveDataModelResult) driverResolveResult).getDidDocument());
@@ -130,12 +137,7 @@ public class LocalUniResolver implements UniResolver {
 
 		// [after resolve]
 
-		if (! extensionStatus.skipAfterResolve()) {
-			for (ResolverExtension resolverExtension : this.getExtensions()) {
-				extensionStatus.or(resolverExtension.afterResolve(did, resolutionOptions, resolveResult, resolveRepresentation, this));
-				if (extensionStatus.skipAfterResolve()) break;
-			}
-		}
+		this.executeExtensions(ResolverExtension.AfterResolveResolverExtension.class, extensionStatus, e -> e.afterResolve(did, resolutionOptions, resolveResult, resolveRepresentation, executionState, this), resolutionOptions, resolveResult, executionState);
 
 		// additional metadata
 
@@ -145,7 +147,10 @@ public class LocalUniResolver implements UniResolver {
 
 		// done
 
-		return resolveRepresentation ? resolveResult.toResolveRepresentationResult(accept) : resolveResult.toResolveDataModelResult();
+		final ResolveResult finalResolveResult = resolveRepresentation ? resolveResult.toResolveRepresentationResult(accept) : resolveResult.toResolveDataModelResult();
+		if (log.isInfoEnabled()) log.info("Final resolve result: " + finalResolveResult + " (" + resolveRepresentation + ", " + finalResolveResult.getClass().getSimpleName() + ")");
+
+		return finalResolveResult;
 	}
 
 	public ResolveResult resolveOrResolveRepresentationWithDrivers(DID did, Map<String, Object> resolutionOptions, boolean resolveRepresentation) throws ResolutionException {
@@ -168,24 +173,57 @@ public class LocalUniResolver implements UniResolver {
 			}
 		}
 
-		if (usedDriver != null) {
+		if (usedDriver == null) {
 
-			if (usedDriver instanceof HttpDriver) {
+			if (log.isInfoEnabled()) log.info("Method not supported: " + did.getMethodName());
+			throw new ResolutionException(ResolutionException.ERROR_METHODNOTSUPPORTED, "Method not supported: " + did.getMethodName());
+		}
 
-				driverResolveResult.getDidResolutionMetadata().put("pattern", ((HttpDriver) usedDriver).getPattern().pattern());
-				driverResolveResult.getDidResolutionMetadata().put("driverUrl", ((HttpDriver) usedDriver).getResolveUri());
+		if (usedDriver instanceof HttpDriver) {
 
-				if (log.isDebugEnabled()) log.debug("Resolved " + did + " with driver " + usedDriver.getClass().getSimpleName() + " and pattern " + ((HttpDriver) usedDriver).getPattern().pattern());
-			} else {
+			driverResolveResult.getDidResolutionMetadata().put("pattern", ((HttpDriver) usedDriver).getPattern().pattern());
+			driverResolveResult.getDidResolutionMetadata().put("driverUrl", ((HttpDriver) usedDriver).getResolveUri());
 
-				if (log.isDebugEnabled()) log.debug("Resolved " + did + " with driver " + usedDriver.getClass().getSimpleName());
-			}
+			if (log.isDebugEnabled()) log.debug("Resolved " + did + " with driver " + usedDriver.getClass().getSimpleName() + " and pattern " + ((HttpDriver) usedDriver).getPattern().pattern());
 		} else {
 
-			if (log.isDebugEnabled()) log.debug("No result with " + this.getDrivers().size() + " drivers.");
+			if (log.isDebugEnabled()) log.debug("Resolved " + did + " with driver " + usedDriver.getClass().getSimpleName());
 		}
 
 		return driverResolveResult;
+	}
+
+	private <E extends ResolverExtension> void executeExtensions(Class<E> extensionClass, ExtensionStatus extensionStatus, ResolverExtension.ExtensionFunction<E> extensionFunction, Map<String, Object> resolutionOptions, ResolveResult resolveResult, Map<String, Object> executionState) throws ResolutionException {
+
+		String extensionStage = extensionClass.getAnnotation(ResolverExtension.ExtensionStage.class).value();
+
+		List<E> extensions = this.getExtensions().stream().filter(extensionClass::isInstance).map(extensionClass::cast).toList();
+		if (log.isDebugEnabled()) log.debug("EXTENSIONS (" + extensionStage + "), TRYING: {}", ResolverExtension.extensionClassNames(extensions));
+
+		List<ResolverExtension> skippedExtensions = new ArrayList<>();
+		List<ResolverExtension> inapplicableExtensions = new ArrayList<>();
+
+		for (E extension : extensions) {
+			if (extensionStatus.skip(extensionStage)) { skippedExtensions.add(extension); continue; }
+			String beforeResolutionOptions = "" + resolutionOptions;
+			String beforeResolveResult = "" + resolveResult;
+			String beforeExecutionState = "" + executionState;
+			ExtensionStatus returnedExtensionStatus = extensionFunction.apply(extension);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableExtensions.add(extension); continue; }
+			String afterResolutionOptions = "" + resolutionOptions;
+			String afterResolveResult = "" + resolveResult;
+			String afterExecutionState = "" + executionState;
+			String changedResolutionOptions = afterResolutionOptions.equals(beforeResolutionOptions) ? "(unchanged)" : afterResolutionOptions;
+			String changedResolveResult = afterResolveResult.equals(beforeResolveResult) ? "(unchanged)" : afterResolveResult;
+			String changedExecutionState = afterExecutionState.equals(beforeExecutionState) ? "(unchanged)" : afterExecutionState;
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + " with resolution options " + changedResolutionOptions + " and resolve result " + changedResolveResult + " and execution state " + changedExecutionState);
+		}
+
+		if (log.isDebugEnabled()) {
+			List<E> executedExtensions = extensions.stream().filter(e -> ! skippedExtensions.contains(e)).filter(e -> ! inapplicableExtensions.contains(e)).toList();
+			log.debug("EXTENSIONS (" + extensionStage + "), EXECUTED: {}, SKIPPED: {}, INAPPLICABLE: {}", ResolverExtension.extensionClassNames(executedExtensions), ResolverExtension.extensionClassNames(skippedExtensions), ResolverExtension.extensionClassNames(inapplicableExtensions));
+		}
 	}
 
 	@Override

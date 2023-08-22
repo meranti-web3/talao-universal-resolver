@@ -8,13 +8,13 @@
 	<parent>
 		<groupId>decentralized-identity</groupId>
 		<artifactId>uni-resolver</artifactId>
-		<version>0.6-SNAPSHOT</version>
+		<version>0.13-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
