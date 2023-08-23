@@ -268,7 +268,7 @@ services:
     image: bnewbold/uni-resolver-driver-did-plc:latest
     ports:
       - '8144:8000'
-  uni-resolver-driver-did-hedera:
+  driver-did-hedera:
     image: meeco/uni-resolver-driver-did-hedera:latest
     ports:
-      - '8129:8081'
+      - '8145:8081'

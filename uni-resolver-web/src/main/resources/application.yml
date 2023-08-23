@@ -310,3 +310,8 @@ uniresolver:
       testIdentifiers:
         - did:plc:yk4dd2qkboz2yv6tpubpc6co
         - did:plc:44ybard66vv44zksje25o7dz
+    - pattern: "^(did:hedera:.+)$"
+      url: http://driver-did-hedera:8081/
+      testIdentifiers:
+        - did:hedera:testnet:z5P1atRTktJL8Ap7saabU4pHEaT96ZBFHQU5qeYjxYLqr_0.0.15424549
+        - did:hedera:testnet:G4YcoGJtgbNNYWvBknZz52f3pKRZamSJwFv9AGRQYaH1_0.0.500550

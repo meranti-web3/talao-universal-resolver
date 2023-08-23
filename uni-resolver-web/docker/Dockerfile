@@ -15,7 +15,7 @@ RUN cd /opt/universal-resolver/uni-resolver-web && mvn clean install package -N
 
 # build image
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 WORKDIR /opt/universal-resolver/uni-resolver-web/
