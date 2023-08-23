@@ -313,5 +313,6 @@ uniresolver:
     - pattern: "^(did:hedera:.+)$"
       url: http://driver-did-hedera:8081/
       testIdentifiers:
+        - did:hedera:mainnet:z52k2w6rFF9xxzvmSiuyqwJS8b7oFnDtk8S3bhY4YbnJq_0.0.3474905
         - did:hedera:testnet:z5P1atRTktJL8Ap7saabU4pHEaT96ZBFHQU5qeYjxYLqr_0.0.15424549
         - did:hedera:testnet:G4YcoGJtgbNNYWvBknZz52f3pKRZamSJwFv9AGRQYaH1_0.0.500550
