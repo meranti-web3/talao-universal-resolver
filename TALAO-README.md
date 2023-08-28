@@ -32,6 +32,19 @@ And build the docker container locally. The container pushed to the docker regis
 docker build -f ./uni-resolver-web/docker/Dockerfile . -t universalresolver/uni-resolver-web
 ```
 
+## Configure
+
+You're going to need a `.htpasswd` file to setup basic auth. The file should be at the root of the repository.
+
+```sh
+touch .htpasswd
+```
+
+```sh
+echo -n "user:" >> .htpasswd
+openssl passwd -apr1 >> .htpasswd # enter and verify password
+```
+
 ## Run
 
 On Linux
