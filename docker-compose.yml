@@ -18,10 +18,11 @@ services:
       - ./certbot/www:/var/www/certbot/:ro
     depends_on:
       - uni-resolver-web
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
+  #     - certbot
+  # certbot:
+  #   image: certbot/certbot:latest
+  #   volumes:
+  #     - ./certbot/www/:/var/www/certbot/:rw
   uni-resolver-web:
     image: universalresolver/uni-resolver-web:latest
     expose:
