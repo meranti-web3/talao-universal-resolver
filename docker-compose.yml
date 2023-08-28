@@ -9,13 +9,19 @@ services:
     image: nginx:latest
     container_name: nginx-proxy
     ports:
+      - "80:80"
       - "443:443"
     restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd:ro;
+      - ./.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./certbot/www:/var/www/certbot/:ro
     depends_on:
       - uni-resolver-web
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
   uni-resolver-web:
     image: universalresolver/uni-resolver-web:latest
     expose:

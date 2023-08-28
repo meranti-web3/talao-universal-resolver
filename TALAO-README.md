@@ -45,6 +45,22 @@ echo -n "user:" >> .htpasswd
 openssl passwd -apr1 >> .htpasswd # enter and verify password
 ```
 
+We also need to generate a certificate:
+
+```sh
+docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d altme.io
+```
+
+Remember to change the domain to the actual domain.
+
+We use certbot to manage letsencrypt certificates: https://mindsers.blog/post/https-using-nginx-certbot-docker/
+
+To renew the certificate:
+
+```sh
+docker compose run --rm certbot renew
+```
+
 ## Run
 
 On Linux
