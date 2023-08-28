@@ -27,10 +27,19 @@ services:
     image: universalresolver/uni-resolver-web:latest
     expose:
       - "8080:8080"
+  uni-resolver-driver-did-uport:
+    image: uport/uni-resolver-driver-did-uport:4.1.0
+  driver-didkit:
+    image: ghcr.io/spruceid/didkit-http:latest
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
   driver-did-ion:
     image: identityfoundation/driver-did-ion:v0.8.1
   driver-did-sol:
     image: identitydotcom/driver-did-sol:3.3.0
+  alastria-did-driver-mvp2:
+    image: alastria/uni-resolver-driver-did-alastria:mvp2
   did-jwk-driver:
     image: transmute/restricted-resolver:latest
   driver-did-polygonid:
