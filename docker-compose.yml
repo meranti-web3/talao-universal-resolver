@@ -5,27 +5,26 @@ networks:
     name: universal-resolver
 
 services:
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - uni-resolver-web
   uni-resolver-web:
     image: universalresolver/uni-resolver-web:latest
-    ports:
+    expose:
       - "8080:8080"
   driver-did-ion:
     image: identityfoundation/driver-did-ion:v0.8.1
-    ports:
-      - "8111:8080"
   driver-did-sol:
     image: identitydotcom/driver-did-sol:3.3.0
-    ports:
-      - "8118:8080"
   did-jwk-driver:
     image: transmute/restricted-resolver:latest
-    ports:
-      - "8134:8080"
   driver-did-polygonid:
     image: polygonid/driver-did-polygonid:latest
-    ports:
-      - "8141:8080"
   driver-did-hedera:
     image: meeco/uni-resolver-driver-did-hedera:latest
-    ports:
-      - "8145:8081"
