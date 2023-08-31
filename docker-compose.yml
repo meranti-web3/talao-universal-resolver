@@ -16,13 +16,15 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd:ro
       - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
     depends_on:
       - uni-resolver-web
-  #     - certbot
-  # certbot:
-  #   image: certbot/certbot:latest
-  #   volumes:
-  #     - ./certbot/www/:/var/www/certbot/:rw
+      - certbot
+  certbot:
+     image: certbot/certbot:latest
+     volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
   uni-resolver-web:
     image: universalresolver/uni-resolver-web:latest
     expose:
