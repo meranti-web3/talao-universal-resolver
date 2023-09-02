@@ -22,6 +22,7 @@ services:
       - certbot
   certbot:
      image: certbot/certbot:latest
+     restart: always
      volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
@@ -29,22 +30,31 @@ services:
     image: universalresolver/uni-resolver-web:latest
     expose:
       - "8080:8080"
+    restart: always
   uni-resolver-driver-did-uport:
     image: uport/uni-resolver-driver-did-uport:4.1.0
+    restart: always
   driver-didkit:
     image: ghcr.io/spruceid/didkit-http:latest
     environment:
       PORT: 3000
       HOST: 0.0.0.0
+    restart: always
   driver-did-ion:
     image: identityfoundation/driver-did-ion:v0.8.1
+    restart: always
   driver-did-sol:
     image: identitydotcom/driver-did-sol:3.3.0
+    restart: always
   alastria-did-driver-mvp2:
     image: alastria/uni-resolver-driver-did-alastria:mvp2
+    restart: always
   did-jwk-driver:
     image: transmute/restricted-resolver:latest
+    restart: always
   driver-did-polygonid:
     image: polygonid/driver-did-polygonid:latest
+    restart: always
   driver-did-hedera:
     image: meeco/uni-resolver-driver-did-hedera:latest
+    restart: always
