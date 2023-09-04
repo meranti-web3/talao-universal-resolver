@@ -21,9 +21,8 @@ services:
       - uni-resolver-web
       - certbot
   certbot:
-     image: certbot/certbot:latest
-     restart: always
-     volumes:
+    image: certbot/certbot:latest
+    volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
   uni-resolver-web:
@@ -57,4 +56,5 @@ services:
     restart: always
   driver-did-hedera:
     image: meeco/uni-resolver-driver-did-hedera:latest
+    platform: linux/amd64
     restart: always
